@@ -1,0 +1,225 @@
+/*
+ * edcan_handler_user.c
+ *
+ * Этот файл содержит обработчики пользовательских регистров EDCAN.
+ * Скопируйте этот файл в ваш проект и переименуйте в edcan_handler_user.c
+ *
+ * Функции, которые необходимо реализовать:
+ * - EDCAN_ReadHandler()      - обработка входящих пакетов Read от других устройств
+ * - EDCAN_WriteUserRegister() - обработка записи в пользовательские регистры
+ * - EDCAN_GetUserRegisterValue() - чтение значений пользовательских регистров
+
+ */
+
+#include <edcan.h>
+#include <stdio.h>
+#include "edcan_config.h"
+
+/* ============================================================================
+ * ОПРЕДЕЛЕНИЯ РЕГИСТРОВ И УСТРОЙСТВ
+ * ============================================================================
+ * Здесь объявляйте:
+ * - ID внешних устройств в сети EDCAN
+ * - Адреса регистров внешних устройств
+ * - Адреса собственных пользовательских регистров (256..2047)
+ */
+
+/* Пример: Определения для внешнего устройства (счетчик электроэнергии) */
+//#define EDCAN_ID_METER        0x10
+//#define EDCAN_REG_METER_VOLTAGE   0x0100
+//#define EDCAN_REG_METER_CURRENT   0x0101
+//#define EDCAN_REG_METER_POWER     0x0102
+
+/* Пример: Определения для собственных пользовательских регистров */
+//#define EDCAN_REG_RELAY_STATE     0x0100  // Состояние реле
+//#define EDCAN_REG_TEMPERATURE     0x0101  // Температура
+//#define EDCAN_REG_PRESSURE        0x0102  // Давление
+
+/* Пример: Внешние переменные для хранения данных */
+//extern uint8_t relay_state;
+//extern int16_t temperature;
+//extern uint16_t pressure;
+
+/* ============================================================================
+ * EDCAN_ReadHandler - Обработка входящих пакетов Read
+ * ============================================================================
+ * Вызывается библиотекой при получении пакета Read от другого устройства.
+ * Используется для обработки данных, полученных от внешних устройств.
+ *
+ * @param SourceID      - ID устройства-отправителя
+ * @param DestinationID - ID устройства-получателя (обычно ваш ID)
+ * @param Addr          - Адрес первого регистра в последовательности
+ * @param data          - Указатель на массив с данными
+ * @param len           - Количество байт данных (1..255)
+ */
+void EDCAN_ReadHandler(uint8_t SourceID, uint8_t DestinationID, uint16_t Addr, uint8_t *data, uint8_t len)
+{
+	// Отладочный вывод (раскомментируйте при необходимости)
+	//printf("EDCAN Read: Source=0x%02X, Dest=0x%02X, Addr=0x%04X, Len=%d\n",
+	//       SourceID, DestinationID, Addr, len);
+
+	// Обработка каждого регистра в последовательности
+	for (uint16_t AddrOffset = 0; AddrOffset < len; AddrOffset++)
+	{
+		uint16_t currentAddr = Addr + AddrOffset;
+		uint8_t value = data[AddrOffset];
+
+		/* ================================================================
+		 * Обработка данных от внешних устройств
+		 * ================================================================
+		 * Добавьте обработку для каждого внешнего устройства
+		 */
+
+		/* Пример: Обработка данных от счетчика электроэнергии */
+		//if (SourceID == EDCAN_ID_METER)
+		//{
+		//	switch (currentAddr)
+		//	{
+		//		case EDCAN_REG_METER_VOLTAGE:
+		//			// Обработка значения напряжения
+		//			printf("Meter Voltage: %d V\n", value);
+		//			// Сохранение значения в переменную
+		//			// voltage_value = value;
+		//			break;
+		//
+		//		case EDCAN_REG_METER_CURRENT:
+		//			// Обработка значения тока
+		//			printf("Meter Current: %d A\n", value);
+		//			// current_value = value;
+		//			break;
+		//
+		//		case EDCAN_REG_METER_POWER:
+		//			// Обработка значения мощности
+		//			printf("Meter Power: %d W\n", value);
+		//			// power_value = value;
+		//			break;
+		//
+		//		default:
+		//			// Неизвестный регистр - можно проигнорировать или залогировать
+		//			break;
+		//	}
+		//}
+
+		/* Пример: Обработка данных от другого устройства */
+		//if (SourceID == EDCAN_ID_OTHER_DEVICE)
+		//{
+		//	switch (currentAddr)
+		//	{
+		//		case EDCAN_REG_OTHER_STATUS:
+		//			// Обработка статуса другого устройства
+		//			break;
+		//
+		//		default:
+		//			break;
+		//	}
+		//}
+	}
+}
+
+/* ============================================================================
+ * EDCAN_WriteUserRegister - Обработка записи в пользовательские регистры
+ * ============================================================================
+ * Вызывается библиотекой при получении пакета Write для ваших регистров.
+ * Используется для обработки команд записи в пользовательские регистры (256..2047).
+ *
+ * @param addr  - Адрес регистра для записи
+ * @param value - Значение для записи (0..255)
+ */
+void EDCAN_WriteUserRegister(uint16_t addr, uint8_t value)
+{
+	switch (addr)
+	{
+		/* ================================================================
+		 * Обработка записи в пользовательские регистры
+		 * ================================================================
+		 * Добавьте обработку для каждого регистра, в который можно писать
+		 */
+
+		/* Пример: Управление реле через GPIO */
+		//case EDCAN_REG_RELAY_STATE:
+		//	printf("Write RELAY_STATE = 0x%02X\n", value);
+		//	// Управление реле (пример для активного низкого уровня)
+		//	HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, (value == 0) ? GPIO_PIN_RESET : GPIO_PIN_SET);
+		//	break;
+
+		/* Пример: Установка целевой температуры */
+		//case EDCAN_REG_TARGET_TEMP:
+		//	printf("Write TARGET_TEMP = %d\n", value);
+		//	target_temperature = value;
+		//	break;
+
+		/* Пример: Управление несколькими выходами */
+		//case EDCAN_REG_OUTPUTS:
+		//	printf("Write OUTPUTS = 0x%02X\n", value);
+		//	// Управление 8 выходами через один регистр
+		//	for (int i = 0; i < 8; i++) {
+		//		HAL_GPIO_WritePin(output_pins[i].port, output_pins[i].pin,
+		//		                   (value & (1 << i)) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+		//	}
+		//	break;
+
+		default:
+			// Неизвестный регистр - можно проигнорировать или залогировать
+			//printf("Unknown register write: 0x%04X = 0x%02X\n", addr, value);
+			break;
+	}
+}
+
+/* ============================================================================
+ * EDCAN_GetUserRegisterValue - Чтение значений пользовательских регистров
+ * ============================================================================
+ * Вызывается библиотекой при получении запроса на чтение ваших регистров.
+ * Используется для возврата значений пользовательских регистров (256..2047).
+ *
+ * @param addr - Адрес регистра для чтения
+ * @return     - Значение регистра (0..255)
+ */
+uint8_t EDCAN_GetUserRegisterValue(uint16_t addr)
+{
+	switch (addr)
+	{
+		/* ================================================================
+		 * Чтение пользовательских регистров
+		 * ================================================================
+		 * Добавьте обработку для каждого регистра, который можно читать
+		 * Регистры 256..2047 используются для пользовательских нужд
+		 */
+
+		/* Пример: Чтение состояния GPIO */
+		//case EDCAN_REG_RELAY_STATE:
+		//	return HAL_GPIO_ReadPin(RELAY_GPIO_Port, RELAY_Pin) == GPIO_PIN_SET ? 1 : 0;
+
+		/* Пример: Чтение температуры (младший байт) */
+		//case EDCAN_REG_TEMPERATURE:
+		//	return (uint8_t)(temperature & 0xFF);
+
+		/* Пример: Чтение температуры (старший байт) */
+		//case EDCAN_REG_TEMPERATURE + 1:
+		//	return (uint8_t)((temperature >> 8) & 0xFF);
+
+		/* Пример: Чтение нескольких входов через один регистр */
+		//case EDCAN_REG_INPUTS:
+		//{
+		//	uint8_t inputs = 0;
+		//	for (int i = 0; i < 8; i++) {
+		//		if (HAL_GPIO_ReadPin(input_pins[i].port, input_pins[i].pin) == GPIO_PIN_SET) {
+		//			inputs |= (1 << i);
+		//		}
+		//	}
+		//	return inputs;
+		//}
+
+		/* Пример: Чтение простых значений */
+		//case EDCAN_REG_STATUS:
+		//	return device_status;
+		//
+		//case EDCAN_REG_COUNTER:
+		//	return counter_value;
+
+		default:
+			// Неизвестный регистр - возвращаем 0
+			// Можно залогировать для отладки
+			//printf("Unknown register read: 0x%04X\n", addr);
+			return 0x00;
+	}
+}
